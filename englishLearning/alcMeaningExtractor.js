@@ -10,20 +10,25 @@
 (() => {
   'use strict';
 
+  const separator = '~~~section line~~~';
+
   // Wait for the DOM to fully load
   window.addEventListener('load', () => {
+    const word = document.querySelector('#resultsList > div.search-use-list > ul > li > span.midashi > h2 > span').innerText.trim();
+
     const entries = document.querySelectorAll('#resultsList .search-use-list ul li div ol');
     if (entries.length === 0) return;
 
     const meaning = extractMeaning(entries);
     if (!meaning) return;
 
-    copyToClipboard(meaning + '\n');
-
     const kana = extractKana();
-    const output = `${meaning}\n\n（読みは${kana}）`;
+    const output = `${word}\n\n${meaning}\n\n（読みは${kana}）`;
 
     displayText(output);
+
+    const cliipBoard = `${separator}\n${word}\n${separator}\n${meaning}\n\n（読みは${kana}）`
+    copyToClipboard(cliipBoard);
   });
 
   const extractMeaning = entries => {
@@ -32,8 +37,8 @@
       entry.innerText
         .trim()
         .split('\n')
-        .forEach(line => {
-          if (!line.includes('・')) text += line + '\n';
+        .forEach((line, idx) => {
+          if (!line.startsWith('・')) text += line + '\n';
         });
     });
     return text.trim() || '';
