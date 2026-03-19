@@ -22,12 +22,12 @@
     const meaning = extractMeaning(entries);
     if (!meaning) return;
 
-    const kana = extractKana();
-    const output = `${word}\n\n${meaning}\n\n（読みは${kana}）`;
+    const pronunciation = extractPronunciation();
+    const output = `${word}\n\n${meaning}\n\n（読みは${pronunciation}）`;
 
     displayText(output);
 
-    const cliipBoard = `${separator}\n${word}\n${separator}\n${meaning}\n\n（読みは${kana}）`
+    const cliipBoard = `${separator}\n${word}\n${separator}\n${meaning}\n\n（読みは${pronunciation}）`
     copyToClipboard(cliipBoard);
   });
 
@@ -44,14 +44,20 @@
     return text.trim() || '';
   };
 
-  const extractKana = () => {
-    const labels = document.querySelectorAll('#resultsList .attr .label');
-    for (const label of labels) {
-      if (label.textContent.trim() === 'カナ') {
-        const span = label.querySelector('.ls_normal');
-        return getFollowingText(span.parentNode);
+  const extractPronunciation = () => {
+    const attrs = document.querySelectorAll('#resultsList .attr');
+
+    for (const attr of attrs) {
+      const labels = attr.querySelectorAll('.label .ls_normal');
+
+      for (const label of labels) {
+        if (label.textContent.trim() === '発音') {
+          const pron = attr.querySelector('.pron');
+          return pron?.textContent.replace('、', '').trim() || '';
+        }
       }
     }
+
     return '';
   };
 
